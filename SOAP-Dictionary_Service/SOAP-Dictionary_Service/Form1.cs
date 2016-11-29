@@ -16,7 +16,7 @@ namespace SOAP_Dictionary_Service
     {
         int totalDef = -1;
         int currDef = 0;
-        SOAP_Dictionary_Service.DictionaryService.Definition[] definitions;
+        string[] definitions;
 
         public Form1()
         {
@@ -25,30 +25,38 @@ namespace SOAP_Dictionary_Service
 
         private void btnGetDefinition_Click(object sender, EventArgs e)
         {
-            String word = txtWord.Text;
-
-           DictionaryService.DictService service = new DictionaryService.DictService();
-
-            WordDefinition defintion = service.Define(word);
-
-            if (defintion.Definitions.Length == 0)
+            try
             {
-                txtDefintion.Text = "No definition for " + word;
-            }
-            else
-            {
-                totalDef = defintion.Definitions.Count();
-                definitions = new SOAP_Dictionary_Service.DictionaryService.Definition [totalDef + 1] ;
-                currDef = 0;
-                for(int i = 0; i < totalDef; i++)
+                String word = txtWord.Text;
+
+                DictionaryService.DictService service = new DictionaryService.DictService();
+
+                WordDefinition defintion = service.Define(word);
+
+                if (defintion.Definitions.Length == 0)
                 {
-                    definitions[i] = defintion.Definitions[i];
+                    txtDefintion.Text = "No definition for " + word;
+                }
+                else
+                {
+                    totalDef = defintion.Definitions.Count();
+                    definitions = new string[totalDef + 1];
+                    currDef = 0;
+                    int i = 0;
+                    foreach (Definition def in defintion.Definitions)
+                    {
+                        definitions[i] = "" + (def.WordDefinition);
+                        i++;
+                    }
+                    txtDefintion.Text = "" + definitions[currDef].ToString();
+                    labelPageNum.Text = (currDef + 1) + "/" + totalDef;
                 }
 
-                txtDefintion.Text = "" + definitions[currDef].ToString();
-                labelPageNum.Text = (currDef + 1) + "/" + totalDef;
             }
-
+            catch (WebException)
+            {
+                MessageBox.Show("Webservice is down.");
+            }
         }
 
         private void btnNext_Click(object sender, EventArgs e)
