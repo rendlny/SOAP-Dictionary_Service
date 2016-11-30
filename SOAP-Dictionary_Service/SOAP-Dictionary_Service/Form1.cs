@@ -27,9 +27,13 @@ namespace SOAP_Dictionary_Service
         {
             try
             {
-                String word = txtWord.Text;
+                String word = txtWord.Text.Trim();
 
                 DictionaryService.DictService service = new DictionaryService.DictService();
+
+                System.Net.ServicePointManager.Expect100Continue = false;
+                service.Proxy = System.Net.WebRequest.GetSystemWebProxy();
+                service.Proxy.Credentials = CredentialCache.DefaultCredentials;
 
                 WordDefinition defintion = service.Define(word);
 
